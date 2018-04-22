@@ -28,9 +28,10 @@
 
 #include "windows.h"
 
-extern "C" _declspec(dllexport) const char* AutoPatch_Date() { return __DATE__; }
-#define AUTOPATCH_TGT(tgt) extern "C" _declspec(dllexport) const char* AutoPatch_Target() {return tgt;}
-#define AUTOPATCH_CMD(cmd) extern "C" _declspec(dllexport) bool AutoPatch_Command() {return cmd();}
+extern "C" _declspec(dllexport) const char* AutoPatch_Date() { return __DATE__; } // e.g. "Oct  1 2020"
+//extern "C" _declspec(dllexport) const char* AutoPatch_Date() { return "Apr  1 2022"; }
+#define AUTOPATCH_TGT(tgtfile) extern "C" _declspec(dllexport) const char* AutoPatch_TgtFile() { return tgtfile; }
+#define AUTOPATCH_CMD(cmd) extern "C" _declspec(dllexport) void AutoPatch_Cmd() {return cmd();}
 
 namespace AutoPatch
 {
@@ -41,7 +42,7 @@ namespace AutoPatch
     FUNC_AUTOPATCH_MAIN fMain;
     if (!(hDLL = LoadLibraryA(".\\Modules\\AutoPatch.dll"))) return;
     fMain = (FUNC_AUTOPATCH_MAIN)GetProcAddress(hDLL, "AutoPatch_Main");
-    if (!fMain) (*fMain)();
+    if (fMain) (*fMain)();
     FreeLibrary(hDLL);
   };
 }
